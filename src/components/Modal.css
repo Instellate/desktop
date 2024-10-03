@@ -1,0 +1,10 @@
+.fading {
+    visibility: hidden;
+    opacity: 0;
+    transition: all 100ms ease-in-out;
+}
+
+.fading.show {
+    visibility: visible;
+    opacity: 1;
+}

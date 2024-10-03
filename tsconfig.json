@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
+  "compilerOptions": {
+    "outDir": "/srcdist",
+    "types": ["vite-plugin-svgr/client"]
+  }
+}

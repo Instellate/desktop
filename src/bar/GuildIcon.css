@@ -1,0 +1,12 @@
+.rounding {
+  border-radius: 50%;
+  transition: all 0.1s ease-in;
+}
+
+.rounding:hover {
+  border-radius: 0.75rem;
+}
+
+.is-selected {
+  border-radius: 0.75rem !important;
+}
