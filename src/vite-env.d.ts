@@ -11,6 +11,7 @@ type CustomText = {
   strikethrough?: true;
   header?: 'h1' | 'h2' | 'h3';
   link?: true;
+  italic?: true;
 };
 
 declare module 'slate' {

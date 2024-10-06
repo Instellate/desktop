@@ -27,6 +27,7 @@ interface Decoration extends Range {
   header?: 'h1' | 'h2' | 'h3';
   strikethrough?: true;
   link?: true;
+  italic?: true;
 }
 
 export default function MessageInput({ channel, sendMessage }: Props) {
@@ -58,6 +59,7 @@ export default function MessageInput({ channel, sendMessage }: Props) {
             'font-bold': leaf.bold,
             'line-through': leaf.strikethrough,
             'text-cyan-400': leaf.link,
+            italic: leaf.italic,
           },
           size,
         )}
@@ -72,7 +74,7 @@ export default function MessageInput({ channel, sendMessage }: Props) {
       const Tag = Editor.isInline(editor, element) ? 'span' : 'p';
       return <Tag {...attributes}>{children}</Tag>;
     },
-    [editor],
+    [editor], // TODO: Implement mentions somehow? 
   );
 
   const decorate = useCallback((entry: NodeEntry) => {
@@ -106,7 +108,7 @@ export default function MessageInput({ channel, sendMessage }: Props) {
 
         let match;
 
-        const boldRegex = /\*\*(.+?)\*\*/gm;
+        const boldRegex = /(?<!\\)\*\*(.+?)(?<!\\)\*\*/gm;
         while ((match = boldRegex.exec(text)) !== null) {
           const anchor = { path, offset: match.index + 2 };
           const focus = { path, offset: match.index + match[0].length - 2 };
@@ -118,7 +120,7 @@ export default function MessageInput({ channel, sendMessage }: Props) {
           });
         }
 
-        const underlineRegex = /__(.+?)__/gm;
+        const underlineRegex = /(?<!\\)__(.+?)(?<!\\)__/gm;
         while ((match = underlineRegex.exec(text)) !== null) {
           const anchor = { path, offset: match.index + 2 };
           const focus = { path, offset: match.index + match[0].length - 2 };
@@ -142,7 +144,8 @@ export default function MessageInput({ channel, sendMessage }: Props) {
           });
         }
 
-        const linkRegex = /https?:\/\/(?:[a-z_\-A-Z0-9]+?\.)*[a-zAZ0-9\-_]{1,256}\.[-a-zA-Z0-9]{1,24}\/?[#a-zA-Z0-9%&?=\-/_.]*/gm;
+        const linkRegex =
+          /https?:\/\/(?:[a-z_\-A-Z0-9]+?\.)*[a-zAZ0-9\-_]{1,256}\.[-a-zA-Z0-9]{1,24}\/?[#a-zA-Z0-9%&?=\-/_.]*/gm;
         while ((match = linkRegex.exec(text)) !== null) {
           const anchor = { path, offset: match.index };
           const focus = { path, offset: match.index + match[0].length };
@@ -151,6 +154,19 @@ export default function MessageInput({ channel, sendMessage }: Props) {
             anchor,
             focus,
             link: true,
+          });
+        }
+
+        const italicRegex =
+          /_((?:__|\\[\s\S]|[^\\_])+?)_|(?<=\s|^)\*(?=\S)((?:\*\*|\\[\s\S]|\s+(?:\\[\s\S]|[^\s*\\]|\*\*)|[^\s*\\])+?)\*(?!\*)/gm;
+        while ((match = italicRegex.exec(text)) !== null) {
+          const anchor = { path, offset: match.index +1 };
+          const focus = { path, offset: match.index + match[0].length - 1};
+
+          range.push({
+            anchor,
+            focus,
+            italic: true,
           });
         }
 

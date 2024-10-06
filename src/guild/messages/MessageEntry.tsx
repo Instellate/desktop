@@ -83,7 +83,7 @@ function MessageContent({
   const parser = SimpleMarkdown.parserFor(rules as unknown as ParserRules);
   const output = SimpleMarkdown.outputFor(rules, 'react');
 
-  const ast = parser(children.replace('\n', '\n\n'));
+  const ast = parser(children.replace(/\n/gm, '\n\n'));
   const md = output(ast);
 
   useEffect(() => {
